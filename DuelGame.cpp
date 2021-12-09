@@ -236,12 +236,12 @@ void create_profile() {
 int main() {
 	//srand(time(NULL));
 	//setlocale(LC_ALL, "Russian");
-	//game();
+	game();
 	//int asd;
 	//cin >> asd;
 	//save();
-	create_profile();
-	for (int i = 0; i < size(settings); i++) {
-		cout << settings[i] << endl;
-	}
+	//create_profile();
+	//for (int i = 0; i < size(settings); i++) {
+	//	cout << settings[i] << endl;
+	//}
 }
