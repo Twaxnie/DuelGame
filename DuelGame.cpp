@@ -25,7 +25,6 @@ public:
 		ofstream File;
 		File.open("profile.txt");
 		File<< name << endl\
-			<< health << endl\
 			<< exp << endl\
 			<< level << endl\
 			<< damage << endl\
@@ -40,7 +39,6 @@ public:
 		ifstream Load;
 		Load.open("profile.txt");
 		Load >> name\
-			>> health\
 			>> exp\
 			>> level\
 			>> damage\
@@ -110,7 +108,7 @@ char bot_action() {
 	}
 }
 
-void game() {
+int game() {
 	Game player, bot;
 	player.load();
 	while (player.health > 0 or bot.health > 0) {
@@ -213,20 +211,27 @@ void game() {
 		}
 	}
 	if (bot.health == 0 and player.health != 0) {
-		cout << "Вы победили!" << endl;
+		system("cls");
+		cout << "___Вы победили!___" << endl;
 		player.exp += 10;
 		cout << player.exp << "(+10)";
 	}
 	if (player.health == 0 and bot.health != 0) {
-		cout << "Вы проиграли" << endl;
+		system("cls");
+		cout << "___Вы проиграли___" << endl;
 		player.exp -= 5;
 		cout << player.exp << "(-5)";
 	}
 	if (bot.health == 0 and player.health == 0) {
-		cout << "Ничья" << endl;
+		system("cls");
+		cout << "___Ничья___" << endl;
 		player.exp += 5;
 		cout << player.exp << "(+5)";
 	}
+	player.save();
+	cout << endl;
+	cout << "Вернуться в меню: ";
+	return 0;                                                //here
 }
 
 void BeforeStart() {
@@ -282,6 +287,7 @@ void menu() {
 }
 
 int main() {
+	system("color 2");
 	srand(time(NULL));
 	setlocale(LC_ALL, "Russian");
 	cout << "|``````````````````````|\n"\
@@ -289,6 +295,7 @@ int main() {
 		<< "|         To           |\n"\
 		<< "|        Du3l          |\n"\
 		<< "|,,,,,,,,,,,,,,,,,,,,,,|" << endl;
+	
 		char Start;
 		while (true){
 			cout << "Print S to Start" << endl;
