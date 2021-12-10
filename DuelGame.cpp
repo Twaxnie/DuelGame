@@ -282,6 +282,7 @@ void menu() {
 }
 
 int main() {
+<<<<<<< HEAD
 	srand(time(NULL));
 	setlocale(LC_ALL, "Russian");
 	cout << "|``````````````````````|\n"\
@@ -300,3 +301,16 @@ int main() {
 	}
 
 }
+=======
+	//srand(time(NULL));
+	//setlocale(LC_ALL, "Russian");
+	game();
+	//int asd;
+	//cin >> asd;
+	//save();
+	//create_profile();
+	//for (int i = 0; i < size(settings); i++) {
+	//	cout << settings[i] << endl;
+	//}
+}
+>>>>>>> 2f2c8a8c4791b20dde3ac043b0dd542b8c97706a
