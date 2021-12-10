@@ -9,7 +9,7 @@ using namespace std;
 int settings[8];
 
 
-class Game {
+class Game{
 public:
 	string name = "Player";
 	int health = 100;
@@ -24,7 +24,7 @@ public:
 	void save() {
 		ofstream File;
 		File.open("profile.txt");
-		File << name << endl\
+		File<< name << endl\
 			<< health << endl\
 			<< exp << endl\
 			<< level << endl\
@@ -33,7 +33,7 @@ public:
 			<< chance_of_protection << endl\
 			<< chance_to_parry << endl\
 			<< number_of_duels << endl;
-		File.close();
+			File.close();
 	}
 
 	void load() {
@@ -70,7 +70,7 @@ public:
 		cout << "Вернуться в меню: ";
 		char b;
 		cin >> b;
-
+		
 	}
 };
 
@@ -105,7 +105,7 @@ char bot_action() {
 	if (rand() % 2 == 0) {
 		return 'A';
 	}
-	else {
+	else{
 		return 'D';
 	}
 }
@@ -136,7 +136,7 @@ void game() {
 						cout << "Противник парировал урон" << endl;
 						cout << endl;
 					}
-					else {
+					else{
 						if (try_to_protect(bot.chance_of_protection) == true) {
 							cout << "Противник смог защититься" << endl;
 							cout << endl;
@@ -152,7 +152,7 @@ void game() {
 				else {
 					cout << "Вам не удалось нанести урон" << endl;
 					cout << endl;
-
+					
 				}
 			}
 			if (bot_act == 'A') {
@@ -163,18 +163,18 @@ void game() {
 					bot.health -= player.damage;
 					cout << "Вы нанесли урон" << endl;
 					cout << endl;
-
-
+						
+					
 				}
 				else {
 					cout << "Вам не удалось нанести урон" << endl;
 					cout << endl;
-
+					
 				}
 				if (try_to_hit(bot.chance_to_hit) == true) {
 					player.health -= bot.damage;
 					cout << "Вам нанесли урон" << endl;
-					cout << endl;
+					cout << endl;	
 				}
 				else {
 					cout << "Противник не нанес урон" << endl;
@@ -207,7 +207,7 @@ void game() {
 				else {
 					cout << "Противник не смог нанести урон" << endl;
 					cout << endl;
-
+					
 				}
 			}
 		}
@@ -235,7 +235,7 @@ void BeforeStart() {
 	cout << "|1 - Начать игру с новым профилем" << endl;
 	cout << ((!check.is_open()) ? "" : "|2 - Начать игру с существующем профилем") << endl;
 	int check_num;
-	while (true) {
+	while (true){
 		cin >> check_num;
 		if (check_num == 1) {
 			system("cls");
@@ -252,7 +252,7 @@ void BeforeStart() {
 			}
 		}
 	}
-
+	
 
 }
 
@@ -282,7 +282,6 @@ void menu() {
 }
 
 int main() {
-<<<<<<< HEAD
 	srand(time(NULL));
 	setlocale(LC_ALL, "Russian");
 	cout << "|``````````````````````|\n"\
@@ -290,27 +289,15 @@ int main() {
 		<< "|         To           |\n"\
 		<< "|        Du3l          |\n"\
 		<< "|,,,,,,,,,,,,,,,,,,,,,,|" << endl;
-	char Start;
-	while (true) {
-		cout << "Print S to Start" << endl;
-		cin >> Start;
-		if (Start == 'S') {
-			menu();
-			break;
+		char Start;
+		while (true){
+			cout << "Print S to Start" << endl;
+			cin >> Start;
+			if (Start == 'S') {
+				menu();
+				break;
+			}
 		}
-	}
+		
+}
 
-}
-=======
-	//srand(time(NULL));
-	//setlocale(LC_ALL, "Russian");
-	game();
-	//int asd;
-	//cin >> asd;
-	//save();
-	//create_profile();
-	//for (int i = 0; i < size(settings); i++) {
-	//	cout << settings[i] << endl;
-	//}
-}
->>>>>>> 2f2c8a8c4791b20dde3ac043b0dd542b8c97706a
