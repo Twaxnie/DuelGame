@@ -1,8 +1,6 @@
 ﻿#include <iostream>
 #include <fstream>
-// #include <>
 using namespace std;
-
 
 //rand()%100+1
 //system("cls");
@@ -10,22 +8,71 @@ using namespace std;
 
 int settings[8];
 
-int player_health = 100;
-int player_exp = 0;
-int player_level = 0;
-int player_damage = 10;
-int player_chance_to_hit = 50;
-int player_chance_of_protection = 50;
-int player_chance_to_parry = 15;
-int number_of_duels = 1;
 
+class Game {
+public:
+	string name = "Player";
+	int health = 100;
+	int exp = 0;
+	int level = 0;
+	int damage = 10;
+	int chance_to_hit = 50;
+	int chance_of_protection = 50;
+	int chance_to_parry = 15;
+	int number_of_duels = 0;
 
-int bot_health = 100;
-int bot_level = 0;
-int bot_damage = 10;
-int bot_chance_to_hit = 60;
-int bot_chance_of_protection = 50;
-int bot_chance_to_parry = 15;
+	void save() {
+		ofstream File;
+		File.open("profile.txt");
+		File << name << endl\
+			<< health << endl\
+			<< exp << endl\
+			<< level << endl\
+			<< damage << endl\
+			<< chance_to_hit << endl\
+			<< chance_of_protection << endl\
+			<< chance_to_parry << endl\
+			<< number_of_duels << endl;
+		File.close();
+	}
+
+	void load() {
+		ifstream Load;
+		Load.open("profile.txt");
+		Load >> name\
+			>> health\
+			>> exp\
+			>> level\
+			>> damage\
+			>> chance_to_hit\
+			>> chance_of_protection\
+			>> chance_to_parry\
+			>> number_of_duels;
+		Load.close();
+	}
+
+	void stat() {
+		Game player;
+		player.load();
+		system("cls");
+		cout << "___________Статистика___________" << endl;
+		cout << "Имя - " << player.name << endl;
+		cout << "Опыт - " << player.exp << endl;
+		cout << "Урон - " << player.damage << endl;
+		cout << "----------" << endl;
+		cout << "Шанс атаки - " << player.chance_to_hit << endl;
+		cout << "Шанс защиты - " << player.chance_of_protection << endl;
+		cout << "Шанс парировать - " << player.chance_to_parry << endl;
+		cout << "----------" << endl;
+		cout << "Количество побед: " << player.number_of_duels;
+		cout << endl;
+		cout << endl;
+		cout << "Вернуться в меню: ";
+		char b;
+		cin >> b;
+
+	}
+};
 
 int try_to_hit(int hit) {
 	if (rand() % 100 + 1 <= hit) {
@@ -58,22 +105,21 @@ char bot_action() {
 	if (rand() % 2 == 0) {
 		return 'A';
 	}
-	else{
+	else {
 		return 'D';
 	}
 }
 
-void health() {
-	cout << "ХП Игрока: " << player_health << endl;
-	cout << "ХП Бота: " << bot_health << endl;
-	cout << endl;
-}
-
 void game() {
-	while (player_health > 0 or bot_health > 0) {
-		if (player_health <= 0 or bot_health <= 0) {
+	Game player, bot;
+	player.load();
+	while (player.health > 0 or bot.health > 0) {
+		if (player.health <= 0 or bot.health <= 0) {
 			break;
 		}
+		cout << "ХП Игрока: " << player.health << endl;
+		cout << "ХП Бота: " << bot.health << endl;
+		cout << endl;
 		char player_action;
 		cout << "Выберите действие(A - атака, D - защита): ";
 		cin >> player_action;
@@ -84,77 +130,56 @@ void game() {
 				cout << "Вы атакуете" << endl;
 				cout << "Противник пытается защититься" << endl;
 				cout << endl;
-				if (try_to_hit(player_chance_to_hit) == true) {
-					if (try_to_parry(bot_chance_to_parry) == true) {
-						player_health -= player_damage;
+				if (try_to_hit(player.chance_to_hit) == true) {
+					if (try_to_parry(bot.chance_to_parry) == true) {
+						player.health -= player.damage;
 						cout << "Противник парировал урон" << endl;
 						cout << endl;
-						health();
 					}
-					else{
-						if (try_to_protect(bot_chance_of_protection) == true) {
+					else {
+						if (try_to_protect(bot.chance_of_protection) == true) {
 							cout << "Противник смог защититься" << endl;
 							cout << endl;
-							health();
 						}
 						else {
-							bot_health -= player_damage;
+							bot.health -= player.damage;
 							cout << "Противник не смог защититься" << endl;
 							cout << endl;
-							health();
 						}
 					}
+
 				}
 				else {
 					cout << "Вам не удалось нанести урон" << endl;
 					cout << endl;
-					health();
-				}
 
+				}
 			}
 			if (bot_act == 'A') {
 				cout << "Вы атакуете" << endl;
 				cout << "Противник атакует" << endl;
 				cout << endl;
-				if (try_to_hit(player_chance_to_hit) == true) {
-					if (try_to_parry(bot_chance_to_parry) == true) {
-						player_health -= player_damage;
-						cout << "Противник парировал урон" << endl;
-						cout << endl;
-						health();
-					}
-					else {
-						bot_health -= player_damage;
-						cout << "Вы нанесли урон" << endl;
-						cout << endl;
-						health();
-					}
+				if (try_to_hit(player.chance_to_hit) == true) {
+					bot.health -= player.damage;
+					cout << "Вы нанесли урон" << endl;
+					cout << endl;
+
+
 				}
 				else {
 					cout << "Вам не удалось нанести урон" << endl;
 					cout << endl;
-					health();
+
 				}
-				if (try_to_hit(bot_chance_to_hit) == true) {
-					if (try_to_parry(player_chance_to_parry) == true) {
-						bot_health -= bot_damage;
-						cout << "Вы парировали урон" << endl;
-						cout << endl;
-						health();
-					}
-					else {
-						player_health -= bot_damage;
-						cout << "Вам нанесли урон" << endl;
-						cout << endl;
-						health();
-					}
+				if (try_to_hit(bot.chance_to_hit) == true) {
+					player.health -= bot.damage;
+					cout << "Вам нанесли урон" << endl;
+					cout << endl;
 				}
 				else {
 					cout << "Противник не нанес урон" << endl;
 					cout << endl;
-					health();
 				}
-			
 			}
 		}
 		if (player_action == 'D') {
@@ -167,81 +192,111 @@ void game() {
 				cout << "Вы защищаетесь" << endl;
 				cout << "Противник атакует" << endl;
 				cout << endl;
-				if (try_to_hit(bot_chance_to_hit) == true) {
-					if (try_to_parry(player_chance_to_parry) == true) {
-						bot_health -= bot_damage;
+				if (try_to_hit(bot.chance_to_hit) == true) {
+					if (try_to_parry(player.chance_to_parry) == true) {
+						bot.health -= bot.damage;
 						cout << "Вы парировали урон" << endl;
 						cout << endl;
-						health();
 					}
 					else {
-						player_health -= bot_damage;
+						player.health -= bot.damage;
 						cout << "Противник нанес вам урон" << endl;
 						cout << endl;
-						health();
 					}
 				}
 				else {
 					cout << "Противник не смог нанести урон" << endl;
 					cout << endl;
-					health();
-				}
 
+				}
 			}
 		}
 	}
-	if (bot_health == 0 and player_health != 0) {
+	if (bot.health == 0 and player.health != 0) {
 		cout << "Вы победили!" << endl;
-		player_exp += 10;
-		cout << player_exp << "(+10)";
+		player.exp += 10;
+		cout << player.exp << "(+10)";
 	}
-	if (player_health == 0 and bot_health != 0) {
+	if (player.health == 0 and bot.health != 0) {
 		cout << "Вы проиграли" << endl;
-		player_exp -= 5;
-		cout << player_exp << "(-5)";
+		player.exp -= 5;
+		cout << player.exp << "(-5)";
 	}
-	if (bot_health == 0 and player_health == 0) {
+	if (bot.health == 0 and player.health == 0) {
 		cout << "Ничья" << endl;
-		player_exp += 5;
-		cout << player_exp << "(+5)";
+		player.exp += 5;
+		cout << player.exp << "(+5)";
 	}
-
-	
 }
 
-void save() {
-	ofstream File;
-	File.open("profile.txt");
+void BeforeStart() {
+	Game player;
+	ifstream check("profile.txt");
+	cout << "|1 - Начать игру с новым профилем" << endl;
+	cout << ((!check.is_open()) ? "" : "|2 - Начать игру с существующем профилем") << endl;
+	int check_num;
+	while (true) {
+		cin >> check_num;
+		if (check_num == 1) {
+			system("cls");
+			cout << "Введите имя: ";
+			cin >> player.name;
+			player.save();
+			system("cls");
+			game();
+		}
+		if (check.is_open()) {
+			if (check_num == 2) {
+				system("cls");
+				game();
+			}
+		}
+	}
+
+
 }
 
-void create_profile() {
-	ofstream File("profile.txt");
-	File << 100 << endl;
-	File << 0 << endl;
-	File << 0 << endl;
-	File << 10 << endl;
-	File << 50 << endl;
-	File << 50 << endl;
-	File << 15 << endl;
-	File << 0 << endl;
-	File.close();
-	ifstream ifFile("profile.txt");
-	
-	for (int i = 0; i < 8; i++) {
-		ifFile >> settings[i];
+void menu() {
+	Game player;
+	system("cls");
+	cout << "|``````````````````````|\n"\
+		<< "|       Играть (p)     |\n"\
+		<< "|     Статистика (s)   |\n"\
+		<< "|     Инвентарь (i)    |\n"\
+		<< "|,,,,,,,,,,,,,,,,,,,,,,|" << endl;
+	char Start;
+	while (true) {
+		cin >> Start;
+		if (Start == 'p') {
+			system("cls");
+			BeforeStart();
+		}
+		if (Start == 's') {
+			player.stat();
+			menu();
+		}
+		if (Start == 'i') {
+
+		}
 	}
-	
 }
 
 int main() {
-	//srand(time(NULL));
-	//setlocale(LC_ALL, "Russian");
-	//game();
-	//int asd;
-	//cin >> asd;
-	//save();
-	create_profile();
-	for (int i = 0; i < size(settings); i++) {
-		cout << settings[i] << endl;
+	srand(time(NULL));
+	setlocale(LC_ALL, "Russian");
+	cout << "|``````````````````````|\n"\
+		<< "|       Welcome        |\n"\
+		<< "|         To           |\n"\
+		<< "|        Du3l          |\n"\
+		<< "|,,,,,,,,,,,,,,,,,,,,,,|" << endl;
+	char Start;
+	while (true) {
+		cout << "Print S to Start" << endl;
+		cin >> Start;
+		if (Start == 'S') {
+			menu();
+			break;
+		}
 	}
+
 }
