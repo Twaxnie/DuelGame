@@ -34,17 +34,14 @@ enum invType {
 	belt
 };
 
-struct Items {
-	string item_name;
-	string item_description;
-	int add_hit;
-	int add_protect;
-	int add_parry;
-	int add_hp;
-	int id;
-	int slot1;
-	int slot2;
+enum Stat {
+	hp,
+	dmg,
+	hit,
+	prot,
+	parry
 };
+
 
 //Предметы
 
@@ -66,8 +63,8 @@ int Items[][8] = {
 	{2,			weapon,		leftArm,	0,			0,			0,			-3,			5},
 	{3,			wear,		head,		0,			0,			0,			7,			0},
 	{4,			wear,		body,		0,			0,			-5,			9,			1},
-	{5,			wear,		legs,		0,			0,			0,			3,			1},
-	{6,			wear,		boots,		0,			0,			0,			1,			1}
+	{5,			belt,		   0,		0,			0,			0,			3,			1},
+	{6,			belt,		   0,		0,			0,			0,			1,			1}
 };
 
 
@@ -84,7 +81,10 @@ public:
 	int chance_to_parry = 15;
 	int number_of_duels = 0;
 	int display_level = 0;
-	int inventory[3][4] = { {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0} };
+	int inventory[3][4] = { {0, 0, 0, 0}, 
+							{0, 0, 0, 0}, 
+							{0, 0, 0, 0}};
+	int chance_to_drop = 30;
 
 
 	void save() {
@@ -108,7 +108,8 @@ public:
 			<< inventory[belt][0] << endl\
 			<< inventory[belt][1] << endl\
 			<< inventory[belt][2] << endl\
-			<< inventory[belt][3] << endl;
+			<< inventory[belt][3] << endl\
+			<< chance_to_drop;
 			File.close();
 	}
 
@@ -133,32 +134,49 @@ public:
 			>> inventory[belt][0]\
 			>> inventory[belt][1]\
 			>> inventory[belt][2]\
-			>> inventory[belt][3];
+			>> inventory[belt][3]\
+			>> chance_to_drop;
 		Load.close();
 	}
 
-	void item_boost() {
+	int feature(int feature) {
 		Game player;
+		player.load();
 		int add_hp = 0;
 		int add_dmg = 0;
 		int add_hit = 0;
 		int add_prot = 0;
 		int add_parry = 0;
 		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j <= 4; j++) {
-				add_hp = Items[player.inventory[i][j]][3];
-				add_dmg = Items[player.inventory[i][j]][4];
-				add_hit = Items[player.inventory[i][j]][5];
-				add_prot = Items[player.inventory[i][j]][6];
-				add_parry = Items[player.inventory[i][j]][7];
+			for (int j = 0; j < 4; j++) {
+				add_hp += Items[inventory[i][j]][3];
+				add_dmg += Items[inventory[i][j]][4];
+				add_hit += Items[inventory[i][j]][5];
+				add_prot += Items[inventory[i][j]][6];
+				add_parry += Items[inventory[i][j]][7];
 			}
 		}
+		if (feature == hp) {
+			return add_hp + player.health;
+		}
+		if (feature == dmg) {
+			return add_dmg + player.damage;
+		}
+		if (feature == hit) {
+			return add_hit + player.chance_to_hit;
+		}
+		if (feature == prot) {
+			return add_prot + player.chance_of_protection;
+		}
+		if (feature == parry) {
+			return add_parry + player.chance_to_parry;
+		}
+
 	}
 
 	void stat() {
 		Game player;
 		player.load();
-		//item_boost();
 		system("cls");
 		system("color 2");
 		
@@ -186,7 +204,7 @@ public:
 
 
 
-	
+
 
 
 
@@ -195,9 +213,39 @@ public:
 
 void inv() {
 	Game player;
+	player.load();
 	player.inventory;
+	cout << "            #######" << endl;
+	cout << "           ##@###@##" << endl;
+	cout << "           #########" << endl;
+	cout << "            ##---##" << endl;
+	cout << "               #" << endl;
+	cout << "              ###" << endl;
+	cout << "             # # #" << endl;
+	cout << "            #  #  # " << endl;
+	cout << "               # " << endl;
+	cout << "               # " << endl;
+	cout << "              # #" << endl;
+	cout << "             #   #" << endl;
+	cout << "            #     #" << endl;
+	cout << "_________Броня_________" << endl;
+	cout << "Голова: " << "[" << ItemName[player.inventory[wear][head]] << "]" << endl;
+	cout << "Тело: " << "[" << ItemName[player.inventory[wear][body]] << "]" << endl;
+	cout << "Руки: " << "[" << ItemName[player.inventory[wear][legs]] << "]" << endl;
+	cout << "Ноги: " << "[" << ItemName[player.inventory[wear][boots]] << "]" << endl;
+	cout << endl;
+	cout << "_________Оружие_________" << endl;
+	cout << "Правая рука: " << "[" << ItemName[player.inventory[weapon][rightArm]] << "]" << endl;
+	cout << "Левая рука: " << "[" << ItemName[player.inventory[weapon][leftArm]] << "]" << endl;
+	cout << endl;
+	cout << "_________Пояс_________" << endl;
+	cout << "1 слот: " << "[" << ItemName[player.inventory[belt][0]] << "]" << endl;
+	cout << "2 слот: " << "[" << ItemName[player.inventory[belt][1]] << "]" << endl;
+	cout << "3 слот: " << "[" << ItemName[player.inventory[belt][2]] << "]" << endl;
+	cout << "4 слот: " << "[" << ItemName[player.inventory[belt][3]] << "]" << endl;
 
-
+	char choice;
+	cin >> choice;
 }
 
 
@@ -253,6 +301,75 @@ int bot_skill() {
 	}
 }
 
+void drop() {
+	Game player;
+	player.load();
+	if (rand() % 100 + 1 <= player.chance_to_drop) {
+		int drop = rand() % (size(Items) - 1) + 1;
+		cout << "Новый предмет: " << ItemName[drop] << endl;
+		if (Items[drop][1] == wear) {
+			cout << "В этом слоту " << ItemName[player.inventory[Items[drop][1]][Items[drop][2]]] << endl;
+			cout << "Надеть или заменить предмет? (y/n): ";
+			char choice;
+			cin >> choice;
+			if (choice == 'y') {
+				player.inventory[Items[drop][1]][Items[drop][2]] = drop;
+				player.chance_to_drop = 30;
+				player.save();
+			}
+			else {
+				return;
+			}
+		}
+	
+
+
+		if (Items[drop][1] == weapon) {
+			cout << "В слоту " << player.inventory[Items[drop][1]][Items[drop][2]] << endl;
+			cout << "Надеть или заменить предмет? (y/n): ";
+			char choice;
+			cin >> choice;
+			if (choice == 'y') {
+				player.inventory[Items[drop][1]][Items[drop][2]] = drop;
+				player.chance_to_drop = 30;
+				player.save();
+			}
+			else {
+				return;
+			}
+			
+
+		}
+		if (Items[drop][1] == belt) {
+			cout << "_________Пояс_________" << endl;
+			cout << "1 слот: " << "[" << ItemName[player.inventory[belt][0]] << "]" << endl;
+			cout << "2 слот: " << "[" << ItemName[player.inventory[belt][1]] << "]" << endl;
+			cout << "3 слот: " << "[" << ItemName[player.inventory[belt][2]] << "]" << endl;
+			cout << "4 слот: " << "[" << ItemName[player.inventory[belt][3]] << "]" << endl;
+			cout << endl;
+			cout << "Выберите слот в который хотите поместить предмет или заменить старый: ";
+			int slot;
+			cin >> slot;
+			cout << "Надеть или заменить предмет? (y/n): ";
+			char choice;
+			cin >> choice;
+			if (choice == 'y') {
+				player.inventory[Items[drop][1]][Items[drop][2]] = drop;
+				player.chance_to_drop = 30;
+				player.save();
+			}
+			else {
+				return;
+			}
+		}
+	}
+		else {
+			player.chance_to_drop += 5;
+			player.save();
+			return;
+		}
+}
+
 
 
 void game() {
@@ -271,11 +388,16 @@ void game() {
 			bot.chance_to_parry += 2;
 		}
 	}
-	while (player.health > 0 or bot.health > 0) {
-		if (player.health <= 0 or bot.health <= 0) {
+	int game_health = player.feature(hp);
+	int game_damage = player.feature(dmg);
+	int game_hit = player.feature(hit);
+	int game_prot = player.feature(prot);
+	int game_parry = player.feature(parry);
+	while (game_health > 0 or bot.health > 0) {
+		if (game_health <= 0 or bot.health <= 0) {
 			break;
 		}
-		cout << "ХП Игрока: " << player.health << endl;
+		cout << "ХП Игрока: " << game_health << endl;
 		cout << "ХП Бота: " << bot.health << endl;
 		cout << endl;
 		char player_action;
@@ -288,9 +410,9 @@ void game() {
 				cout << "Вы атакуете" << endl;
 				cout << "Противник пытается защититься" << endl;
 				cout << endl;
-				if (try_to_hit(player.chance_to_hit) == true) {
+				if (try_to_hit(game_hit) == true) {
 					if (try_to_parry(bot.chance_to_parry) == true) {
-						player.health -= player.damage;
+						game_health -= game_damage;
 						cout << "Противник парировал урон" << endl;
 						cout << endl;
 					}
@@ -300,7 +422,7 @@ void game() {
 							cout << endl;
 						}
 						else {
-							bot.health -= player.damage;
+							bot.health -= game_damage;
 							cout << "Противник не смог защититься" << endl;
 							cout << endl;
 						}
@@ -317,8 +439,8 @@ void game() {
 				cout << "Вы атакуете" << endl;
 				cout << "Противник атакует" << endl;
 				cout << endl;
-				if (try_to_hit(player.chance_to_hit) == true) {
-					bot.health -= player.damage;
+				if (try_to_hit(game_hit) == true) {
+					bot.health -= game_damage;
 					cout << "Вы нанесли урон" << endl;
 					cout << endl;
 						
@@ -330,7 +452,7 @@ void game() {
 					
 				}
 				if (try_to_hit(bot.chance_to_hit) == true) {
-					player.health -= bot.damage;
+					game_health -= bot.damage;
 					cout << "Вам нанесли урон" << endl;
 					cout << endl;	
 				}
@@ -351,13 +473,13 @@ void game() {
 				cout << "Противник атакует" << endl;
 				cout << endl;
 				if (try_to_hit(bot.chance_to_hit) == true) {
-					if (try_to_parry(player.chance_to_parry) == true) {
+					if (try_to_parry(game_parry) == true) {
 						bot.health -= bot.damage;
 						cout << "Вы парировали урон" << endl;
 						cout << endl;
 					}
 					else {
-						player.health -= bot.damage;
+						game_health -= bot.damage;
 						cout << "Противник нанес вам урон" << endl;
 						cout << endl;
 					}
@@ -370,7 +492,7 @@ void game() {
 			}
 		}
 	}
-	if (bot.health == 0 and player.health != 0) {
+	if (bot.health == 0 and game_health != 0) {
 		system("cls");
 		cout << "___Вы победили!___" << endl;
 		player.exp += 10;
@@ -378,14 +500,14 @@ void game() {
 		cout << "Ваш опыт - " << player.exp << "(+10)";
 		cout << endl;
 	}
-	if (player.health == 0 and bot.health != 0) {
+	if (game_health == 0 and bot.health != 0) {
 		system("cls");
 		cout << "___Вы проиграли___" << endl;
 		player.exp -= 5;
 		cout << "Ваш опыт - " << player.exp << "(-5)";
 		cout << endl;
 	}
-	if (bot.health == 0 and player.health == 0) {
+	if (bot.health == 0 and game_health == 0) {
 		system("cls");
 		cout << "___Ничья___" << endl;
 		player.exp += 5;
@@ -421,6 +543,7 @@ void game() {
 	}
 	player.level = 0;
 	player.save();
+	drop();
 	cout << endl;
 	cout << "любой символ чтобы вернуться в меню" << endl;
 	cout << "n - начать навую игру" << endl;
@@ -490,7 +613,9 @@ void menu() {
 			break;
 		}
 		if (Start == 'i') {
-
+			system("cls");
+			inv();
+			break;
 		}
 	}
 	
