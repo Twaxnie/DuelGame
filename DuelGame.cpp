@@ -59,9 +59,9 @@ int Items[][8] = {
 	//id		slot		sSlot		iHP			iDMG		iHit		iProt		iParry
 //	{,			,			,			,			,			,			,			 }
 	{0,			0,			0,			0,			0,			0,			0,			0},
-	{1,			weapon,		rightArm,	50,			0,			2,			-1,			0},
+	{1,			wear,		head,	   50,			0,			2,			-1,			0},
 	{2,			weapon,		leftArm,	0,			0,			0,			-3,			5},
-	{3,			wear,		head,		0,			0,			0,			7,			0},
+	{3,			weapon,		rightArm,	0,			0,			0,			7,			0},
 	{4,			wear,		body,		0,			0,			-5,			9,			1},
 	{5,			belt,		   0,		0,			0,			0,			3,			1},
 	{6,			belt,		   0,		0,			0,			0,			1,			1}
