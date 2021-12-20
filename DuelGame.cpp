@@ -1,11 +1,15 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <stdio.h>
+#include <windows.h>
 using namespace std;
 
 //rand()%100+1
 //system("cls");
 
+void print(string text) {
+	cout << text << endl;
+}
 
 enum wears {
 	head,
@@ -43,16 +47,17 @@ enum Stat {
 };
 
 
+
 //Предметы
 
 string ItemName[] = {
-	"Пусто",          //0
-	"Маска Паука",    //1
-	"Катаны Дэдпула", //2
-	"Щит Кэпа",       //3
-	"Броня Старка",   //4
-	"Камень разума",  //5
-	"Камень силы"     //6
+	"Empty",              //0
+	"Spider Mask",        //1
+	"Deadpool's Katana",  //2
+	"Cap's Shield",       //3
+	"Stark Armor",        //4
+	"Mind Stone",         //5
+	"Power Stone"         //6
 };
 
 int Items[][8] = {
@@ -67,6 +72,14 @@ int Items[][8] = {
 	{6,			belt,		   0,		0,			0,			0,			1,			1}
 };
 
+string Bot_Name[] = { "Ironclad", "Strong", "Parryman", "Giant", "Default" };
+
+//                      id     hp      dmg    hit    prot   parry
+int Bot_Stat[5][6] = {  {0,    110,    10,    50,    65,    15},
+						{1,    100,    15,    60,    45,    20},
+						{2,    100,    10,    30,    40,    40},
+						{3,    150,    20,    30,    30,    10},
+						{4,    100,    10,    50,    50,    15} };
 
 
 class Game{
@@ -85,7 +98,7 @@ public:
 							{0, 0, 0, 0}, 
 							{0, 0, 0, 0}};
 	int chance_to_drop = 30;
-
+	float money = 0;
 
 	void save() {
 		ofstream File;
@@ -109,7 +122,8 @@ public:
 			<< inventory[belt][1] << endl\
 			<< inventory[belt][2] << endl\
 			<< inventory[belt][3] << endl\
-			<< chance_to_drop;
+			<< chance_to_drop << endl\
+			<< money;
 			File.close();
 	}
 
@@ -135,7 +149,8 @@ public:
 			>> inventory[belt][1]\
 			>> inventory[belt][2]\
 			>> inventory[belt][3]\
-			>> chance_to_drop;
+			>> chance_to_drop\
+			>> money;
 		Load.close();
 	}
 
@@ -178,36 +193,102 @@ public:
 		Game player;
 		player.load();
 		system("cls");
-		system("color 2");
+		system("color 5");
+		print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+		print("::::::::::::::::::::::::::::::::::::'######::'########::::'###::::'########::'######::::::::::::::::::::::::::::::::::::");
+		print("::::::::::::::::::::::::::::::::::::'##... ##:... ##..::::'## ##:::... ##..::'##... ##::::::::::::::::::::::::::::::::::");
+		print(":::::::::::::::::::::::::::::::::::: ##:::..::::: ##:::::'##:. ##::::: ##:::: ##:::..:::::::::::::::::::::::::::::::::::");
+		print("::::::::::::::::::::::::::::::::::::. ######::::: ##::::'##:::. ##:::: ##::::. ######:::::::::::::::::::::::::::::::::::");
+		print(":::::::::::::::::::::::::::::::::::::..... ##:::: ##:::: #########:::: ##:::::..... ##::::::::::::::::::::::::::::::::::");
+		print("::::::::::::::::::::::::::::::::::::'##::: ##:::: ##:::: ##.... ##:::: ##::::'##::: ##::::::::::::::::::::::::::::::::::");
+		print("::::::::::::::::::::::::::::::::::::. ######::::: ##:::: ##:::: ##:::: ##::::. ######:::::::::::::::::::::::::::::::::::");
+		print(":::::::::::::::::::::::::::::::::::::......::::::..:::::..:::::..:::::..::::::......::::::::::::::::::::::::::::::::::::");
 		
-		cout << "___________Статистика___________" << endl;
-		cout << "Имя - " << player.name << endl;
-		cout << "Опыт - " << player.exp << endl;
-		cout << "Урон - " << player.damage << endl;
+		cout << "Name - " << player.name << endl;
+		cout << "EXP - " << player.exp << endl;
+		cout << "Damage - " << player.damage << endl;
 		cout << "----------" << endl;
-		cout << "Шанс атаки - " << player.chance_to_hit << endl;
-		cout << "Шанс защиты - " << player.chance_of_protection << endl;
-		cout << "Шанс парировать - " << player.chance_to_parry << endl;
+		cout << "Attack chance - " << player.chance_to_hit << endl;
+		cout << "Defense chance - " << player.chance_of_protection << endl;
+		cout << "Chance to parry - " << player.chance_to_parry << endl;
 		cout << "----------" << endl;
-		cout << "Количество побед: " << player.number_of_duels << endl;
-		cout << "Уровень: " << player.display_level;
+		cout << "Number of wins: " << player.number_of_duels << endl;
+		cout << "LVL: " << player.display_level;
 		cout << endl;
+		cout << "----------" << endl;
+		cout << "Money: " << player.money << endl;
 		cout << endl;
-		cout << "Вернуться в меню: ";
+		cout << "Back to menu: ";
 		char b;
 		cin >> b;
 		
 	}
 };
 
-
-
-
-
-
-
-
-
+/* void roulette() {
+	Game player;
+	cout << "Your balance: " << player.money << endl;
+	cout << "Bet: ";
+	float bet = 0;
+	char Char_String[4] = {'*', '$', '#', '_'};
+	cin >> bet;
+	player.money -= bet;
+	char choice1 = rand() % 4;
+	char choice2 = rand() % 4;
+	char choice3 = rand() % 4;
+	int won_money = 0;
+	if (choice1 == 0) {
+		if ((choice2 == 0 and choice3 != 0) or (choice2 != 0 and choice3 == 0)) {
+			player.money += bet * 1.5;
+			won_money = bet * 1.5;
+		}
+		if (choice2 == 0 and choice3 == 0) {
+			player.money += bet * 2;
+			won_money = bet * 2;
+		}
+	}
+	if (choice1 == 1) {
+		if (choice2 == 1 and choice3 == 1) {
+			player.money += bet * 10;
+			won_money = bet * 10;
+		}
+	}
+	if (choice1 == 2) {
+		if ((choice2 == 2 and choice3 != 2) or (choice2 != 2 and choice3 == 2)) {
+			player.money += bet * 1.25;
+			won_money = bet * 1.25;
+		}
+		if (choice2 == 2 and choice3 == 2) {
+			player.money += bet * 1.5;
+			won_money = bet * 1.5;
+		}
+	}
+	system("cls");
+	for (int i = 0; i < 10; i++) {
+		print("::::::::::::::::::::::::");
+		cout << ":   " << Char_String[rand() % 4] << "   :   " << Char_String[rand() % 4] << "   :   " << Char_String[rand() % 4] << "   :" << endl;
+		print("::::::::::::::::::::::::");
+		Sleep(1000);
+		system("cls");
+		
+	}
+	system("cls");
+	print("::::::::::::::::::::::::");
+	cout << ":   " << Char_String[choice1] << "   :   " << Char_String[choice2] << "   :   " << Char_String[choice3] << "   :" << endl;
+	print("::::::::::::::::::::::::");
+	cout << "You won: " << won_money << " coins" << endl;
+	cout << "1| Back to menu" << endl;
+	cout << "2| Try again" << endl;
+	int choice;
+	cin >> choice;
+	if (choice == 1) {
+		return;
+	}
+	if (choice == 2) {
+		roulette();
+	}
+}
+*/
 
 
 
@@ -215,34 +296,31 @@ void inv() {
 	Game player;
 	player.load();
 	player.inventory;
-	cout << "            #######" << endl;
-	cout << "           ##@###@##" << endl;
-	cout << "           #########" << endl;
-	cout << "            ##---##" << endl;
-	cout << "               #" << endl;
-	cout << "              ###" << endl;
-	cout << "             # # #" << endl;
-	cout << "            #  #  # " << endl;
-	cout << "               # " << endl;
-	cout << "               # " << endl;
-	cout << "              # #" << endl;
-	cout << "             #   #" << endl;
-	cout << "            #     #" << endl;
-	cout << "_________Броня_________" << endl;
-	cout << "Голова: " << "[" << ItemName[player.inventory[wear][head]] << "]" << endl;
-	cout << "Тело: " << "[" << ItemName[player.inventory[wear][body]] << "]" << endl;
-	cout << "Руки: " << "[" << ItemName[player.inventory[wear][legs]] << "]" << endl;
-	cout << "Ноги: " << "[" << ItemName[player.inventory[wear][boots]] << "]" << endl;
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::'####:'##::: ##:'##::::'##:'########:'##::: ##:'########::'#######::'########::'##:::'##::::::::::::::::");
+	print("::::::::::::::::. ##:: ###:: ##: ##:::: ##: ##.....:: ###:: ##:... ##..::'##.... ##: ##.... ##:. ##:'##:::::::::::::::::");
+	print("::::::::::::::::: ##:: ####: ##: ##:::: ##: ##::::::: ####: ##:::: ##:::: ##:::: ##: ##:::: ##::. ####::::::::::::::::::");
+	print("::::::::::::::::: ##:: ## ## ##: ##:::: ##: ######::: ## ## ##:::: ##:::: ##:::: ##: ########::::. ##:::::::::::::::::::");
+	print("::::::::::::::::: ##:: ##. ####:. ##:: ##:: ##...:::: ##. ####:::: ##:::: ##:::: ##: ##.. ##:::::: ##:::::::::::::::::::");
+	print("::::::::::::::::: ##:: ##:. ###::. ## ##::: ##::::::: ##:. ###:::: ##:::: ##:::: ##: ##::. ##::::: ##:::::::::::::::::::");
+	print("::::::::::::::::'####: ##::. ##:::. ###:::: ########: ##::. ##:::: ##::::. #######:: ##:::. ##:::: ##:::::::::::::::::::");
+	print("::::::::::::::::....::..::::..:::::...:::::........::..::::..:::::..::::::.......:::..:::::..:::::..::::::::::::::::::::");
 	cout << endl;
-	cout << "_________Оружие_________" << endl;
-	cout << "Правая рука: " << "[" << ItemName[player.inventory[weapon][rightArm]] << "]" << endl;
-	cout << "Левая рука: " << "[" << ItemName[player.inventory[weapon][leftArm]] << "]" << endl;
+	print(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::Armor::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	cout << "Head: " << "[" << ItemName[player.inventory[wear][head]] << "]" << endl;
+	cout << "Body: " << "[" << ItemName[player.inventory[wear][body]] << "]" << endl;
+	cout << "Hands: " << "[" << ItemName[player.inventory[wear][legs]] << "]" << endl;
+	cout << "Legs: " << "[" << ItemName[player.inventory[wear][boots]] << "]" << endl;
 	cout << endl;
-	cout << "_________Пояс_________" << endl;
-	cout << "1 слот: " << "[" << ItemName[player.inventory[belt][0]] << "]" << endl;
-	cout << "2 слот: " << "[" << ItemName[player.inventory[belt][1]] << "]" << endl;
-	cout << "3 слот: " << "[" << ItemName[player.inventory[belt][2]] << "]" << endl;
-	cout << "4 слот: " << "[" << ItemName[player.inventory[belt][3]] << "]" << endl;
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::Weapon::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	cout << "Right Hand: " << "[" << ItemName[player.inventory[weapon][rightArm]] << "]" << endl;
+	cout << "Left Hand: " << "[" << ItemName[player.inventory[weapon][leftArm]] << "]" << endl;
+	cout << endl;
+	print(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::Belt ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	cout << "1 slot: " << "[" << ItemName[player.inventory[belt][0]] << "]" << endl;
+	cout << "2 slot: " << "[" << ItemName[player.inventory[belt][1]] << "]" << endl;
+	cout << "3 slot: " << "[" << ItemName[player.inventory[belt][2]] << "]" << endl;
+	cout << "4 slot: " << "[" << ItemName[player.inventory[belt][3]] << "]" << endl;
 
 	char choice;
 	cin >> choice;
@@ -306,10 +384,10 @@ void drop() {
 	player.load();
 	if (rand() % 100 + 1 <= player.chance_to_drop) {
 		int drop = rand() % (size(Items) - 1) + 1;
-		cout << "Новый предмет: " << ItemName[drop] << endl;
+		cout << "New item: " << ItemName[drop] << endl;
 		if (Items[drop][1] == wear) {
-			cout << "В этом слоту " << ItemName[player.inventory[Items[drop][1]][Items[drop][2]]] << endl;
-			cout << "Надеть или заменить предмет? (y/n): ";
+			cout << "In this slot " << ItemName[player.inventory[Items[drop][1]][Items[drop][2]]] << endl;
+			cout << "Put on or replace an item? (y/n): ";
 			char choice;
 			cin >> choice;
 			if (choice == 'y') {
@@ -325,8 +403,8 @@ void drop() {
 
 
 		if (Items[drop][1] == weapon) {
-			cout << "В слоту " << player.inventory[Items[drop][1]][Items[drop][2]] << endl;
-			cout << "Надеть или заменить предмет? (y/n): ";
+			cout << "In the slot" << player.inventory[Items[drop][1]][Items[drop][2]] << endl;
+			cout << "Put on or replace an item? (y/n): ";
 			char choice;
 			cin >> choice;
 			if (choice == 'y') {
@@ -341,16 +419,16 @@ void drop() {
 
 		}
 		if (Items[drop][1] == belt) {
-			cout << "_________Пояс_________" << endl;
-			cout << "1 слот: " << "[" << ItemName[player.inventory[belt][0]] << "]" << endl;
-			cout << "2 слот: " << "[" << ItemName[player.inventory[belt][1]] << "]" << endl;
-			cout << "3 слот: " << "[" << ItemName[player.inventory[belt][2]] << "]" << endl;
-			cout << "4 слот: " << "[" << ItemName[player.inventory[belt][3]] << "]" << endl;
+			cout << "_________Belt_________" << endl;
+			cout << "1 slot: " << "[" << ItemName[player.inventory[belt][0]] << "]" << endl;
+			cout << "2 slot: " << "[" << ItemName[player.inventory[belt][1]] << "]" << endl;
+			cout << "3 slot: " << "[" << ItemName[player.inventory[belt][2]] << "]" << endl;
+			cout << "4 slot: " << "[" << ItemName[player.inventory[belt][3]] << "]" << endl;
 			cout << endl;
-			cout << "Выберите слот в который хотите поместить предмет или заменить старый: ";
+			cout << "Select the slot where you want to place the item or replace the old one: ";
 			int slot;
 			cin >> slot;
-			cout << "Надеть или заменить предмет? (y/n): ";
+			cout << "Put on or replace an item? (y/n): ";
 			char choice;
 			cin >> choice;
 			if (choice == 'y') {
@@ -370,12 +448,30 @@ void drop() {
 		}
 }
 
+void Give_Money() {
+	Game player;
+	player.load();
+	int give_money = rand() % 20;
+	cout << "You've earned " << give_money << "coin" << endl;
+	player.money += give_money;
+	player.save();
+}
 
 
 void game() {
 	Game player, bot;
 	player.load();
-	for (int i = 0; i < player.display_level; i++) {   //Рандомно +2 к скиллу бота
+
+	//bot_loading
+	int rand_type = rand() % 5;
+	cout << "Enemy type : " << Bot_Name[rand_type] << endl;
+	bot.health = Bot_Stat[rand_type][1];
+	bot.damage = Bot_Stat[rand_type][2];
+	bot.chance_to_hit = Bot_Stat[rand_type][3];
+	bot.chance_of_protection = Bot_Stat[rand_type][4];
+	bot.chance_to_parry = Bot_Stat[rand_type][5];
+
+	for (int i = 0; i < player.display_level; i++) {   //Bot skill +2
 		int skill_choice = bot_skill();
 		if (skill_choice = 1) {
 			bot.chance_to_hit += 2;
@@ -388,104 +484,109 @@ void game() {
 			bot.chance_to_parry += 2;
 		}
 	}
+
+	//player_stats
 	int game_health = player.feature(hp);
 	int game_damage = player.feature(dmg);
 	int game_hit = player.feature(hit);
 	int game_prot = player.feature(prot);
 	int game_parry = player.feature(parry);
+
+	//game_start
+
 	while (game_health > 0 or bot.health > 0) {
 		if (game_health <= 0 or bot.health <= 0) {
 			break;
 		}
-		cout << "ХП Игрока: " << game_health << endl;
-		cout << "ХП Бота: " << bot.health << endl;
+		cout << "HP Player: " << game_health << endl;
+		cout << "HP Bot: " << bot.health << endl;
 		cout << endl;
 		char player_action;
-		cout << "Выберите действие(A - атака, D - защита): ";
+		cout << "Choose an action (A - attack, D - defense): ";
 		cin >> player_action;
 		system("cls");
 		char bot_act = bot_action();
 		if (player_action == 'A') {
 			if (bot_act == 'D') {
-				cout << "Вы атакуете" << endl;
-				cout << "Противник пытается защититься" << endl;
+				cout << "You attack" << endl;
+				cout << "The enemy tries to defend" << endl;
 				cout << endl;
 				if (try_to_hit(game_hit) == true) {
 					if (try_to_parry(bot.chance_to_parry) == true) {
 						game_health -= game_damage;
-						cout << "Противник парировал урон" << endl;
+						cout << "The enemy parried the damage" << endl;
 						cout << endl;
 					}
 					else{
 						if (try_to_protect(bot.chance_of_protection) == true) {
-							cout << "Противник смог защититься" << endl;
+							cout << "The enemy was able to defend" << endl;
 							cout << endl;
 						}
 						else {
 							bot.health -= game_damage;
-							cout << "Противник не смог защититься" << endl;
+							cout << "The enemy was unable to defend" << endl;
 							cout << endl;
 						}
 					}
 
 				}
 				else {
-					cout << "Вам не удалось нанести урон" << endl;
+					cout << "You failed to deal damage" << endl;
 					cout << endl;
 					
 				}
 			}
 			if (bot_act == 'A') {
-				cout << "Вы атакуете" << endl;
-				cout << "Противник атакует" << endl;
+				cout << "You attack" << endl;
+				cout << "The enemy attacks" << endl;
 				cout << endl;
 				if (try_to_hit(game_hit) == true) {
 					bot.health -= game_damage;
-					cout << "Вы нанесли урон" << endl;
+					cout << "You have done damage" << endl;
 					cout << endl;
 						
 					
 				}
 				else {
-					cout << "Вам не удалось нанести урон" << endl;
+					cout << "You failed to deal damage" << endl;
 					cout << endl;
 					
 				}
 				if (try_to_hit(bot.chance_to_hit) == true) {
 					game_health -= bot.damage;
-					cout << "Вам нанесли урон" << endl;
+					cout << "You have been damaged" << endl;
 					cout << endl;	
 				}
 				else {
-					cout << "Противник не нанес урон" << endl;
+					cout << "The enemy did not damage" << endl;
 					cout << endl;
 				}
 			}
 		}
 		if (player_action == 'D') {
 			if (bot_act == 'D') {
-				cout << "Вы защищаетесь" << endl;
-				cout << "Противник защищается" << endl;
+				cout << "You defend" << endl;
+				cout << "The enemy is defending" << endl;
 				cout << endl;
 			}
 			if (bot_act == 'A') {
-				cout << "Вы защищаетесь" << endl;
-				cout << "Противник атакует" << endl;
+				cout << "You defend" << endl;
+				cout << "The enemy attacks" << endl;
 				cout << endl;
 				if (try_to_hit(bot.chance_to_hit) == true) {
 					if (try_to_parry(game_parry) == true) {
 						bot.health -= bot.damage;
-						cout << "Вы парировали урон" << endl;
+						cout << "You parried the damage" << endl;
 						cout << endl;
 					}
 					else {
 						game_health -= bot.damage;
-						cout << "Противник нанес вам урон" << endl;
+						cout << "The enemy has damaged you" << endl;
 						cout << endl;
 					}
 				}
 				else {
-					cout << "Противник не смог нанести урон" << endl;
+					cout << "The enemy was unable to inflict damage" << endl;
 					cout << endl;
 					
 				}
@@ -494,27 +595,29 @@ void game() {
 	}
 	if (bot.health == 0 and game_health != 0) {
 		system("cls");
-		cout << "___Вы победили!___" << endl;
+		cout << "___You won!___" << endl;
 		player.exp += 10;
 		player.number_of_duels += 1;
-		cout << "Ваш опыт - " << player.exp << "(+10)";
+		cout << "Your experience - " << player.exp << "(+10)";
 		cout << endl;
 	}
 	if (game_health == 0 and bot.health != 0) {
 		system("cls");
-		cout << "___Вы проиграли___" << endl;
+		cout << "___You lost___" << endl;
 		player.exp -= 5;
-		cout << "Ваш опыт - " << player.exp << "(-5)";
+		cout << "Your experience - " << player.exp << "(-5)";
 		cout << endl;
 	}
 	if (bot.health == 0 and game_health == 0) {
 		system("cls");
-		cout << "___Ничья___" << endl;
+		cout << "___dead heat___" << endl;
 		player.exp += 5;
-		cout << "Ваш опыт - " << player.exp << "(+5)";
+		cout << "Your experience - " << player.exp << "(+5)";
 		cout << endl;
 	}
 	
+	//exp_add
+
 	while (player.exp >= 100) {
 		player.exp -= 100;
 		player.display_level += 1;
@@ -522,10 +625,10 @@ void game() {
 	}
 	for (int i = 0; i < player.level; i++) {
 		cout << endl;
-		cout << "Выберите улучшение: " << endl;
-		cout << "|1 - шанс попадания" << endl;
-		cout << "|2 - шанс защиты" << endl;
-		cout << "|3 - шанс парировать" << endl;
+		cout << "Select an upgrade: " << endl;
+		cout << "|1 - hit chance" << endl;
+		cout << "|2 - chance of defense" << endl;
+		cout << "|3 - chance to parry" << endl;
 		int choice;
 		cin >> choice;
 		if (choice == 1) {
@@ -543,10 +646,11 @@ void game() {
 	}
 	player.level = 0;
 	player.save();
+	Give_Money();
 	drop();
 	cout << endl;
-	cout << "любой символ чтобы вернуться в меню" << endl;
-	cout << "n - начать навую игру" << endl;
+	cout << "any character to return to the menu" << endl;
+	cout << "n - start a new game" << endl;
 	char d;
 	cin >> d;
 
@@ -565,14 +669,14 @@ void game() {
 void BeforeStart() {
 	Game player;
 	ifstream check("profile.txt");
-	cout << "|1 - Начать игру с новым профилем" << endl;
-	cout << ((!check.is_open()) ? "" : "|2 - Начать игру с существующем профилем") << endl;
+	cout << "|1 - Start the game with a new profile" << endl;
+	cout << ((!check.is_open()) ? "" : "|2 - Start game with existing profile") << endl;
 	int check_num;
 	while (true){
 		cin >> check_num;
 		if (check_num == 1) {
 			system("cls");
-			cout << "Введите имя: ";
+			cout << "Enter your name: ";
 			cin >> player.name;
 			player.save();
 			system("cls");
@@ -594,10 +698,12 @@ void BeforeStart() {
 void menu() {
 	Game player;
 	system("cls");
+	system("color 2");
 	cout << "|``````````````````````|\n"\
-		<< "|       Играть (p)     |\n"\
-		<< "|     Статистика (s)   |\n"\
-		<< "|     Инвентарь (i)    |\n"\
+		<< "|         Play (p)     |\n"\
+		<< "|         Stat (s)     |\n"\
+		<< "|       Inventory (i)  |\n"\
+		<< "|       Roulette(r)    |\n"\
 		<< "|,,,,,,,,,,,,,,,,,,,,,,|" << endl;
 	char Start;
 	while (true) {
@@ -617,21 +723,53 @@ void menu() {
 			inv();
 			break;
 		}
+		/*if (Start == 'r') {
+			system("cls");
+			roulette();
+			break;
+		}*/
 	}
 	
 }
 
 int main() {
-	system("color 2");
+	system("color 0");
 	srand(time(NULL));
-	setlocale(LC_ALL, "Russian");
+	//setlocale(LC_ALL, "Russian");
 	bool flag = false;
-	cout << "|``````````````````````|\n"\
-		<< "|       Welcome        |\n"\
-		<< "|         To           |\n"\
-		<< "|        Du3l          |\n"\
-		<< "|,,,,,,,,,,,,,,,,,,,,,,|" << endl;
-	cout << "Напишите любой символ чтобы начать: ";
+
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print(":::::::::'########::'##::::'##:'########:'##::::::::::::::::::::::::::'######::::::'###::::'##::::'##:'########:::::::::");
+	print("::::::::: ##.... ##: ##:::: ##: ##.....:: ##:::::::::::::::::::::::::'##... ##::::'## ##::: ###::'###: ##.....::::::::::");
+	print("::::::::: ##:::: ##: ##:::: ##: ##::::::: ##::::::::::::::::::::::::: ##:::..::::'##:. ##:: ####'####: ##:::::::::::::::");
+	print("::::::::: ##:::: ##: ##:::: ##: ######::: ##::::::::::::::::::::::::: ##::'####:'##:::. ##: ## ### ##: ######:::::::::::");
+	print("::::::::: ##:::: ##: ##:::: ##: ##...:::: ##::::::::::::::::::::::::: ##::: ##:: #########: ##. #: ##: ##...::::::::::::");
+	print("::::::::: ##:::: ##: ##:::: ##: ##::::::: ##::::::::::::::::::::::::: ##::: ##:: ##.... ##: ##:.:: ##: ##:::::::::::::::");
+	print("::::::::: ########::. #######:: ########: ########:::::::::::::::::::. ######::: ##:::: ##: ##:::: ##: ########:::::::::");
+	print(":::::::::........::::.......:::........::........:::::::::::::::::::::......::::..:::::..::..:::::..::........::::::::::");
+	print(":::::::::::::::::::::::::::::::::::::::::::::::::'######::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::'##... ##:::'##:::::'##:::::::::::::::::::::::::::::::::::::::::::::::::");
+	print(":::::::::::::::::::::::::::::::::::::::::::::::: ##:::..:::: ##::::: ##:::::::::::::::::::::::::::::::::::::::::::::::::");
+	print(":::::::::::::::::::::::::::::::::::::::::::::::: ##:::::::'######:'######:::::::::::::::::::::::::::::::::::::::::::::::");
+	print(":::::::::::::::::::::::::::::::::::::::::::::::: ##:::::::.. ##.::.. ##.::::::::::::::::::::::::::::::::::::::::::::::::");
+	print(":::::::::::::::::::::::::::::::::::::::::::::::: ##::: ##::: ##::::: ##:::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::. ######::::..::::::..::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+	print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+
+	
+	
 	
 	char Start;
 	cin >> Start;
